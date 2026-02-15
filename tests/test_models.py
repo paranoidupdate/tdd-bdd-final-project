@@ -208,6 +208,7 @@ class TestProductModel(unittest.TestCase):
         for product in found:
             self.assertEqual(product.price, price)
 
+    def test_deserialize_a_product(self):
         """It should deserialize dict into Product"""
         product = ProductFactory()
         data = {

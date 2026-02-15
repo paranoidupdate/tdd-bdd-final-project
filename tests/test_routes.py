@@ -166,6 +166,40 @@ class TestProductRoutes(TestCase):
     #
     # ADD YOUR TEST CASES HERE
     #
+    def test_get_product(self):
+        """Read a product"""
+        test_product = self._create_products()[0]
+        response = self.client.get(BASE_URL + "/" + str(test_product.id))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        read_product = response.get_json()
+        self.assertEqual(read_product["id"], test_product.id)
+        self.assertEqual(read_product["name"], test_product.name)
+
+    def test_get_product_not_found(self):
+        """Read a non-existing product"""
+        response = self.client.get(BASE_URL + "/0")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_update_product(self):
+        test_product = self._create_products()[0]
+        data = test_product.serialize()
+        new_name = "New name"
+        data["name"] = new_name
+        response = self.client.put(
+            BASE_URL + "/" + str(test_product.id),
+            json=data
+        )
+        updated_product = response.get_json()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(updated_product["id"], test_product.id)
+        self.assertEqual(updated_product["name"], new_name)
+
+    def test_update_product_not_found(self):
+        """Update a non-existing product"""
+        product = ProductFactory()
+
+        response = self.client.put(f"{BASE_URL}/{product.id}", json=product.serialize())
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     ######################################################################
     # Utility functions
